@@ -1,3 +1,4 @@
+console.log('app.js loaded — updated');
 const BASE = '';
 function showToast(msg, type = 'success', ms = 3000) {
     const toast = document.getElementById('toast');
@@ -11,7 +12,19 @@ function post(url, params = {}) {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString()
-    }).then(r => r.json());
+    }).then(r => {
+        if (!r.ok) {
+            return r.text().then(text => {
+                try {
+                    const json = JSON.parse(text);
+                    return Promise.reject({ status: r.status, body: json });
+                } catch (e) {
+                    return Promise.reject({ status: r.status, body: text });
+                }
+            });
+        }
+        return r.json();
+    });
 }
 function get(url) {
     return fetch(BASE + url).then(r => r.json());
@@ -66,7 +79,11 @@ document.getElementById('get-token-btn').addEventListener('click', () => {
         result.classList.remove('hidden');
         showToast('Token ' + data.token.token + ' generated!', 'success');
         pollStatus();
-    }).catch(() => showToast('Network error', 'error'));
+    }).catch(err => {
+        console.error('get-token error', err);
+        const msg = err && err.body && err.body.message ? err.body.message : 'Network error';
+        showToast(msg, 'error');
+    });
 });
 document.getElementById('search-btn').addEventListener('click', searchToken);
 document.getElementById('search-input').addEventListener('keydown', e => {
@@ -76,7 +93,7 @@ function searchToken() {
     const query = document.getElementById('search-input').value.trim();
     if (!query) { showToast('Enter a token number', 'error'); return; }
     post('/TokenQueueApp/searchToken', { token: query }).then(data => {
-        const el = $('search-result');
+        const el = document.getElementById('search-result');
         el.classList.remove('hidden', 'success', 'error');
         if (!data.success) {
             el.classList.add('error');
@@ -94,7 +111,11 @@ function searchToken() {
             info += `<br>Service completed.`;
         }
         el.innerHTML = info;
-    }).catch(() => showToast('Network error', 'error'));
+    }).catch(err => {
+        console.error('search error', err);
+        const msg = err && err.body && err.body.message ? err.body.message : (err && err.body ? err.body : 'Network error');
+        showToast(msg, 'error');
+    });
 }
 function pollStatus() {
     get('/TokenQueueApp/queueStatus').then(data => {

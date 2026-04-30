@@ -1,5 +1,5 @@
 function showToast(msg, type = 'success', ms = 3000) {
-    const t = $('toast');
+    const t = document.getElementById('toast');
     t.textContent = msg;
     t.className = 'toast ' + type;
     setTimeout(() => { t.className = 'toast hidden'; }, ms);

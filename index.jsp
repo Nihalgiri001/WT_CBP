@@ -79,7 +79,7 @@
                             </table>
                             <div id="toast" style="color:red; font-size:24px;"></div>
                         </center>
-                        <script src="js/app.js"></script>
+                        <script src="js/app.js?v=2"></script>
                     </body>
 
                     </html>
