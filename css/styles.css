@@ -1,0 +1,18 @@
+body {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+
+#toast {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+table {
+    border-collapse: collapse;
+    width: 50%;
+}
